@@ -22,9 +22,9 @@ import pickle
 import os
 import sys
 import pyautogui
-
 import matplotlib.pylab as pylab
-
+matplotlib.get_backend()
+matplotlib.use('GTK4Cairo')
 
 import sys
 # sys.path.append('/home/kiosk/alma_sid_07_05_2025/Alma_main/')
@@ -478,7 +478,7 @@ print((plt.get_backend()))
 # -----------------------------------------------------------------
 scrsize = pyautogui.size()
 mng = plt.get_current_fig_manager()
-# mng.resize(int(scrsize[0]*screenZoom), int(scrsize[1]*screenZoom))
+#mng.resize(int(scrsize[0]*screenZoom), int(scrsize[1]*screenZoom))
 #mng.resize(*mng.window.showMaximized())
 #mng.window.showMaximized()
 mng.full_screen_toggle()
