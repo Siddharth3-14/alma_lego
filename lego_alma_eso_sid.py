@@ -1,5 +1,5 @@
 #%%
-
+#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
 """
 Matplot kinda crashing betweenn the inputs.
 The plots can be created only when there is a change in serial input. Will save some computing power
@@ -25,6 +25,8 @@ import pyautogui
 
 import matplotlib.pylab as pylab
 
+import matplotlib#change here 10-2-2026
+matplotlib.use('TkAgg')#change here 10-2-2026
 
 import sys
 # sys.path.append('/home/kiosk/alma_sid_07_05_2025/Alma_main/')
@@ -75,7 +77,8 @@ attenas_inp = "000000000000000000000000000000000001000000000"
 
 print(os.getcwd())
 LOOP_TIME = 0.1 #seconds
-scale_array =4.0
+scale_array =40.0
+antenna_lim_min ,antenna_lim_max= -3000,3000
 hourangle_start = -2. # hourangle start of obs
 hourangle_end = +2.  # hourangle end of obs
 FREQ = 3e5 #MHz
@@ -133,10 +136,10 @@ ZOOM = 15
 
 PLOT = True
 # antenna_filename = "/home/kiosk/alma_sid_07_05_2025/Alma_main/sid_ant_text.csv"
-antenna_filename = "sid_ant_text.csv"
+antenna_filename = "sid_ant_text_latest_test.csv"
 
 # model_logo_filename = "/home/kiosk/alma_sid_07_05_2025/Alma_main/models/aifa-logo.png"
-model_logo_filename = "./models/aifa-logo.png"
+model_logo_filename = "./models/chalmers-uni.png"
 
 
 ############### Functions ###################
@@ -163,6 +166,7 @@ def getserialinterface(deviceroot="/dev/ttyACM", maxdevice=3, boudrate=115200):
         while count < maxdevice:
             device = f"{deviceroot}{count}"
             try:
+            # parameter timeout freezes it in the place
                ser = serial.Serial(device, baudrate=boudrate)
                print(f"Serial interface {device} found!")           
                return ser
@@ -176,7 +180,8 @@ def getserialinterface(deviceroot="/dev/ttyACM", maxdevice=3, boudrate=115200):
         time.sleep(2)
     
 
-
+ser = getserialinterface()
+print(ser)
 def waitforserialchange(ser, bitdict, ant_dict, npadarray=45, verbose=False):
     """Waits for a change to the serial interface, i.e. any change of a contact.
        Pauses in case there is no contact on one of the hour angles
@@ -196,7 +201,9 @@ def waitforserialchange(ser, bitdict, ant_dict, npadarray=45, verbose=False):
        positions of buttons with closed contacts
 
     """   
+    print('CHECK3')
     validhaselection = False
+    
     while not validhaselection:
         if (NoSerial):
             # buttons = "0110000"
@@ -208,8 +215,10 @@ def waitforserialchange(ser, bitdict, ant_dict, npadarray=45, verbose=False):
             # serialinput= "11111111000111110001101000111000000000000000 0000000100010000100" 
             print('this is the length of serial input',len(serialinput))
         else:
+            print('CHECK4')
             serialinput = str(ser.readline().decode("utf-8").strip())
             if ser.in_waiting > 0:
+                print('CHECK4')
                 # In case there were several triggers for redrawing recorded,
                 # take the last one
                 serialbuffer = ser.read(ser.in_waiting).decode("utf-8").strip().split('\n')  
@@ -269,7 +278,7 @@ def waitforserialchange(ser, bitdict, ant_dict, npadarray=45, verbose=False):
         #import ipdb; ipdb.set_trace()
         ant_pos =  np.array([np.array(ant_dict[bb]) for bb in bit_pos1]) #multiply with a factor, default 13 to scale up the array baselines
 
-
+        print(ant_pos)
         if len(ant_pos)>0 and (bitdict['hourangle_m6'] in bit_pos2) or (bitdict['hourangle_0'] in bit_pos2) or (bitdict['hourangle_p6'] in bit_pos2):
 
             xx_antpos, yy_antpos = ant_pos.T
@@ -307,7 +316,7 @@ def select_model_and_hourangle(bitdict, bit_pos2,bitdict_config,bitdict_image,bu
 
     webcam = False
 
-    pixel_scale = 0.05
+    pixel_scale = 0.0055
 
 
 # bitdict = {'hourangle_m6':     1,
@@ -361,19 +370,26 @@ def select_model_and_hourangle(bitdict, bit_pos2,bitdict_config,bitdict_image,bu
         
     # which hourangle are we observing, is it a full track of hourangle or only dawn/dusk/meridian        
     # if bitdict['fulltrk'] in bit_pos2:
-    integration_time = 6
+    integration_time = 3
     if bitdict['hourangle_0'] in bit_pos2:
         hourangle = 0 
+        hourangle_start = hourangle - integration_time * 0.5
+        hourangle_end   = hourangle + integration_time * 0.5
     elif bitdict['hourangle_m6'] in bit_pos2:
-        hourangle = -5
+        hourangle = -5 
+        hourangle_start = hourangle
+        hourangle_end   = hourangle_start + integration_time
     elif bitdict['hourangle_p6'] in bit_pos2:
-        hourangle = +5
+        hourangle = 5
+        hourangle_end   = hourangle
+        hourangle_start = hourangle_end -integration_time
+
     # else:
     #     integration_time = 12
     #     hourangle = 0
 
-    hourangle_start = hourangle - integration_time * 0.5
-    hourangle_end   = hourangle + integration_time * 0.5
+#    hourangle_start = hourangle - integration_time * 0.5
+#    hourangle_end   = hourangle + integration_time * 0.5
     
     if verbose:
         print(imagefile, integration_time, hourangle_start, hourangle_end)
@@ -436,6 +452,8 @@ else:
 matplotlib.rcParams['toolbar'] = 'None'
 plt.style.use('dark_background')
 
+plt.figure()#change here 10-2-2026
+plt.ion()#change here 10-2-2026
 # all images should have the same pixel size. Depending on the screen size. 
 # For example 400x400. This should speed up the processing.
 
@@ -491,8 +509,8 @@ mng.full_screen_toggle()
 
 ########################## Start of the main program ##########################
 #start of main prgoram loop
-serialinput="0"
-serialinputlast=""
+#serialinput="0"
+#serialinputlast=""
 imglogo = mpimg.imread(model_logo_filename)                
 
 Flag = True
@@ -527,7 +545,9 @@ while True:
         
         # moved above the serial input. Does not cost time anymore.       
             thistime = time.time(); print(("TIMING %f  %f" %(thistime-starttime,thistime-lasttime))); lasttime= thistime
+        print('CHECK 1')    
         bit_pos1, bit_pos2, buttons_config,buttons_image,ant_pos, xx_antpos, yy_antpos, singledish = waitforserialchange(ser, bitdict, ant_dict, verbose=verbose) 
+        print('CHECK 2')   
         # bit_pos1, bit_pos2, ant_pos, xx_antpos, yy_antpos, singledish = waitforserialchange(ser, bitdict, ant_dict, verbose=verbose) 
         write_alma_config_file("lego_alma.config", ant_pos)
         obsMan = observationManager(verbose=True, debug=True)
@@ -650,8 +670,8 @@ while True:
                 p0 = plt.subplot(2,4,1)
                 p0.set_title("Single Dish Antenna",fontsize = 15)
                 p0.scatter(0,0)
-                p0.set_xlim(-250,250)
-                p0.set_ylim(-250,250)
+                p0.set_xlim(antenna_lim_min ,antenna_lim_max)
+                p0.set_ylim(antenna_lim_min ,antenna_lim_max)
                 p0.set_xlabel("x (m)")
                 p0.set_ylabel("y (m)")
                 p0.set_aspect('equal')                
@@ -676,8 +696,8 @@ while True:
                 elif hourangle == 0:
                     pp0.scatter(xx_antpos_proj,-yy_antpos_proj)
                                     
-                pp0.set_xlim(-250,250)
-                pp0.set_ylim(-250,250)
+                pp0.set_xlim(antenna_lim_min ,antenna_lim_max)
+                pp0.set_ylim(antenna_lim_min ,antenna_lim_max)
                 pp0.set_aspect('equal')
                 pp0.set_xlabel("x (m)")
                 pp0.set_ylabel("y (m)")
@@ -801,7 +821,9 @@ while True:
             print(ant_pos)   
             print(("Time for one loop: %s" % str((time.time()-starttime))))
         print("Pausing for   " ,LOOP_TIME)
-        plt.pause(LOOP_TIME)
+        print(plt.isinteractive())
+        plt.draw()  #change here 10-2-2026
+        plt.pause(2) #change here 10-2-2026
         
         #break
         # r=input()       
