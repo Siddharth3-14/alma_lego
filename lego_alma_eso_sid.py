@@ -37,6 +37,8 @@ buttons_inp = "0100100"
 # attenas_inp = "111111111111111111111111111111111111111111111"
 attenas_inp = "000000000000000000000000000000000001000000000"
 
+alma_view_accessible = None # 2026-04-13 - Adam Wikström
+
 # https://medium.com/@CodyReichert/how-to-hide-title-bars-in-kde-plasma-5-348e0df4087f
 # https://matplotlib.org/api/animation_api.html
 # https://stackoverflow.com/questions/17212722/matplotlib-imshow-how-to-animate
@@ -118,7 +120,7 @@ bitdict_image = {'agb_star': 3,
            'hltau': 2,
            'outflow': 4}
 
-NoSerial = False
+NoSerial = True # Changed to True 2026-04-13
 
 webcam = False
 
@@ -646,147 +648,154 @@ while True:
                 plogo.axes.get_xaxis().set_visible(False)
                 plogo.axes.get_yaxis().set_visible(False)
 
+                sigma = 50
                 #plto antenna position
-                p0 = plt.subplot(2,4,1)
-                p0.set_title("Single Dish Antenna",fontsize = 15)
-                p0.scatter(0,0)
-                p0.set_xlim(-250,250)
-                p0.set_ylim(-250,250)
-                p0.set_xlabel("x (m)")
-                p0.set_ylabel("y (m)")
-                p0.set_aspect('equal')                
-                
-                pp0 = plt.subplot(2,4,5)
-                pp0.set_title("ALMA from source (perspective)",fontsize = 15)
-                pp0.text(4.5,-0.3,r"Powered by: Friendly VRI C.R. Purcell R. Truelove",ha='center', va='center',fontsize =8, transform=pp0.transAxes)
-                
-                hrangle_rad = np.radians(hourangle*15)
-                dec_rad = np.radians(DEC)
-                xx_earth_cen = -yy_antpos*np.sin(np.radians(-23.023))
-                yy_earth_cen = xx_antpos
-                zz_earth_cen = yy_antpos*np.cos(np.radians(-23.023))
-            
-                xx_antpos_proj = -(xx_earth_cen*np.sin(hrangle_rad)+yy_earth_cen*np.cos(hrangle_rad))
-                yy_antpos_proj = -xx_earth_cen*np.sin(dec_rad)*np.cos(hrangle_rad) + yy_earth_cen*np.sin(dec_rad)*np.sin(hrangle_rad)+zz_earth_cen*np.cos(dec_rad)
+                # 2026-04-13 - Adam Wikström - commented out following code
+                # p0 = plt.subplot(2,4,1)
+                # p0.set_title("Single Dish Antenna",fontsize = 15)
+                # p0.scatter(0,0)
+                # p0.set_xlim(-250,250)
+                # p0.set_ylim(-250,250)
+                # p0.set_xlabel("x (m)")
+                # p0.set_ylabel("y (m)")
+                # p0.set_aspect('equal')
+                #
+                # pp0 = plt.subplot(2,4,5)
+                # pp0.set_title("ALMA from source (perspective)",fontsize = 15)
+                # pp0.text(4.5,-0.3,r"Powered by: Friendly VRI C.R. Purcell R. Truelove",ha='center', va='center',fontsize =8, transform=pp0.transAxes)
+                #
+                # hrangle_rad = np.radians(hourangle*15)
+                # dec_rad = np.radians(DEC)
+                # xx_earth_cen = -yy_antpos*np.sin(np.radians(-23.023))
+                # yy_earth_cen = xx_antpos
+                # zz_earth_cen = yy_antpos*np.cos(np.radians(-23.023))
+                #
+                # xx_antpos_proj = -(xx_earth_cen*np.sin(hrangle_rad)+yy_earth_cen*np.cos(hrangle_rad))
+                # yy_antpos_proj = -xx_earth_cen*np.sin(dec_rad)*np.cos(hrangle_rad) + yy_earth_cen*np.sin(dec_rad)*np.sin(hrangle_rad)+zz_earth_cen*np.cos(dec_rad)
+                #
+                # if hourangle > 0:
+                #     pp0.scatter(yy_antpos_proj,xx_antpos_proj)
+                # elif hourangle < 0:
+                #     pp0.scatter(-yy_antpos_proj,-xx_antpos_proj)
+                # elif hourangle == 0:
+                #     pp0.scatter(xx_antpos_proj,-yy_antpos_proj)
 
-                if hourangle > 0:
-                    pp0.scatter(yy_antpos_proj,xx_antpos_proj)
-                elif hourangle < 0:
-                    pp0.scatter(-yy_antpos_proj,-xx_antpos_proj)
-                elif hourangle == 0:
-                    pp0.scatter(xx_antpos_proj,-yy_antpos_proj)
-                                    
-                pp0.set_xlim(-250,250)
-                pp0.set_ylim(-250,250)
-                pp0.set_aspect('equal')
-                pp0.set_xlabel("x (m)")
-                pp0.set_ylabel("y (m)")
+                # 2026-04-13 - Adam Wikström
+                # pp0.set_xlim(-250,250)
+                # pp0.set_ylim(-250,250)
+                # pp0.set_aspect('equal')
+                # pp0.set_xlabel("x (m)")
+                # pp0.set_ylabel("y (m)")
 
                 #plot original image
-                p1 = plt.subplot(2,4,2)
-                if imagefile == "/home/kiosk/alma_sid_07_05_2025/Alma_main/models/mistery_med.png":
-                    qmarkimg=mpimg.imread('/home/kiosk/alma_sid_07_05_2025/Alma_main/models/mistery_qmark.png')                
-                    p1.imshow(qmarkimg,cmap = colormap)
-                else:
-                    p1.imshow(np.real(obsMan.modelImgArr),origin = 'lower',cmap = colormap)
-                p1.axes.get_xaxis().set_visible(False)
-                p1.axes.get_yaxis().set_visible(False)
-                p1.set_title("Picture of the source", fontsize = 15)
+                # p1 = plt.subplot(2,4,2)
+                # if imagefile == "/home/kiosk/alma_sid_07_05_2025/Alma_main/models/mistery_med.png":
+                #     qmarkimg=mpimg.imread('/home/kiosk/alma_sid_07_05_2025/Alma_main/models/mistery_qmark.png')
+                #     p1.imshow(qmarkimg,cmap = colormap)
+                # else:
+                #     p1.imshow(np.real(obsMan.modelImgArr),origin = 'lower',cmap = colormap)
+                # p1.axes.get_xaxis().set_visible(False)
+                # p1.axes.get_yaxis().set_visible(False)
+                # p1.set_title("Picture of the source", fontsize = 15)
+                #
+                #
+                # # print("SINGLEDISH")
+                # p2 = plt.subplot(2,4,3)
 
-
-                # print("SINGLEDISH")
-                p2 = plt.subplot(2,4,3)
-                sigma = 50
-                x = np.linspace(-250, 250, 100)
-                y = np.linspace(-250, 250, 100)
-                x_grid, y_grid = np.meshgrid(x, y)
-                single_beam = np.exp(-((x_grid)**2 + (y_grid)**2)/(2*sigma**2))
-                p2.imshow(single_beam,origin = 'lower',cmap = colormap)
-                p2.text(-0.1,0.5,r"$\otimes$",ha='center', va='center',fontsize = 25, transform=p2.transAxes)
-                p2.axes.get_xaxis().set_visible(False)
-                p2.axes.get_yaxis().set_visible(False)
-                p2.set_title("Beam of single dish",fontsize = 15)
-            
-
-                #plot different final image, no beam
-                # with open(imagefile.split(".")[0]+"_SDOUT.pickle",'rb') as fin:
-                #     simage_sd = pickle.load(fin) 
-                sgdish_image = gaussian_filter(obsMan.modelImgArr,sigma,mode = 'constant')
-                p3 = plt.subplot(2,4,4)
-                p3.imshow(sgdish_image,origin = 'lower',cmap = colormap)
-                p3.text(-0.1,0.5,r"$=$",ha='center', va='center',fontsize = 25, transform=p3.transAxes)
-                p3.axes.get_xaxis().set_visible(False)
-                p3.axes.get_yaxis().set_visible(False)
-                p3.set_title("Single Dish View",fontsize = 15)
+                # x = np.linspace(-250, 250, 100)
+                # y = np.linspace(-250, 250, 100)
+                # x_grid, y_grid = np.meshgrid(x, y)
+                # single_beam = np.exp(-((x_grid)**2 + (y_grid)**2)/(2*sigma**2))
+                # p2.imshow(single_beam,origin = 'lower',cmap = colormap)
+                # p2.text(-0.1,0.5,r"$\otimes$",ha='center', va='center',fontsize = 25, transform=p2.transAxes)
+                # p2.axes.get_xaxis().set_visible(False)
+                # p2.axes.get_yaxis().set_visible(False)
+                # p2.set_title("Beam of single dish",fontsize = 15)
+                #
+                #
+                # #plot different final image, no beam
+                # # with open(imagefile.split(".")[0]+"_SDOUT.pickle",'rb') as fin:
+                # #     simage_sd = pickle.load(fin)
+                # sgdish_image = gaussian_filter(obsMan.modelImgArr,sigma,mode = 'constant')
+                # p3 = plt.subplot(2,4,4)
+                # p3.imshow(sgdish_image,origin = 'lower',cmap = colormap)
+                # p3.text(-0.1,0.5,r"$=$",ha='center', va='center',fontsize = 25, transform=p3.transAxes)
+                # p3.axes.get_xaxis().set_visible(False)
+                # p3.axes.get_yaxis().set_visible(False)
+                # p3.set_title("Single Dish View",fontsize = 15)
+                #
+                #
+                #
+                # #fft of original image
+                #
+                # p4 = plt.subplot(2,4,6)
+                # # mm,ll = np.shape(obsMan.modelFFTarr)
+                # #p4.imshow(np.log10(abs(obsMan.modelFFTarr)),cmap = 'gist_heat',interpolation = 'bicubic')
+                # # p4.imshow(np.log10(abs(obsMan.modelFFTarr)),cmap = 'gist_heat',interpolation = 'bicubic')
+                # p4.imshow(obsMan.modelImgArr,cmap = colormap,origin = 'lower')
+                # # p4.set_xlim(ll/2-ll/ZOOM,ll/2+ll/ZOOM)
+                # # p4.set_ylim(mm/2-mm/ZOOM,mm/2+mm/ZOOM)
+                # p4.axes.get_xaxis().set_visible(False)
+                # p4.axes.get_yaxis().set_visible(False)
+                # p4.set_title("Picture of the source",fontsize = 15)
                 
 
-
-                #fft of original image
-                
-                p4 = plt.subplot(2,4,6)
-                # mm,ll = np.shape(obsMan.modelFFTarr)
-                #p4.imshow(np.log10(abs(obsMan.modelFFTarr)),cmap = 'gist_heat',interpolation = 'bicubic')
-                # p4.imshow(np.log10(abs(obsMan.modelFFTarr)),cmap = 'gist_heat',interpolation = 'bicubic')
-                p4.imshow(obsMan.modelImgArr,cmap = colormap,origin = 'lower')
-                # p4.set_xlim(ll/2-ll/ZOOM,ll/2+ll/ZOOM)
-                # p4.set_ylim(mm/2-mm/ZOOM,mm/2+mm/ZOOM)
-                p4.axes.get_xaxis().set_visible(False)
-                p4.axes.get_yaxis().set_visible(False)
-                p4.set_title("Picture of the source",fontsize = 15)                
-                
-
-                if not singledish:    
-                    computetimestart = time.time()
-                    #plot uvcoverage
-                    p5 = plt.subplot(2,4,7)
-                    p5.scatter(obsMan.arrsSelected[0]['uArr_lam'],obsMan.arrsSelected[0]['vArr_lam'],s=1)
-                    p5.scatter(-1.*obsMan.arrsSelected[0]['uArr_lam'],-1*obsMan.arrsSelected[0]['vArr_lam'],s=1)
-                    thistime = time.time(); print(("TIMING %f  %f uv coverage" %(thistime-starttime,thistime-lasttime))); lasttime= thistime
-                    # p5.set_xlim(obsMan.pixScaleFFTX_lam*(-ll/ZOOM),(obsMan.pixScaleFFTX_lam*(+ll/ZOOM)))
-                    # p5.set_ylim(obsMan.pixScaleFFTY_lam*(-mm/ZOOM),(obsMan.pixScaleFFTY_lam*(+mm/ZOOM)))
-                    p5.set_aspect(p0.get_aspect())
-                    p5.text(-0.1,0.5,r"$\otimes$",ha='center', va='center',fontsize = 20, transform=p5.transAxes)
-                    p5.axes.get_xaxis().set_visible(False)
-                    p5.axes.get_yaxis().set_visible(False)
-                    p5.set_title("Beam of the ALMA interferometer",fontsize = 15)                    
+                if not singledish:
+                    # 2026-04-13 - Adam Wikström
+                    # computetimestart = time.time()
+                    # #plot uvcoverage
+                    # p5 = plt.subplot(2,4,7)
+                    # p5.scatter(obsMan.arrsSelected[0]['uArr_lam'],obsMan.arrsSelected[0]['vArr_lam'],s=1)
+                    # p5.scatter(-1.*obsMan.arrsSelected[0]['uArr_lam'],-1*obsMan.arrsSelected[0]['vArr_lam'],s=1)
+                    # thistime = time.time(); print(("TIMING %f  %f uv coverage" %(thistime-starttime,thistime-lasttime))); lasttime= thistime
+                    # # p5.set_xlim(obsMan.pixScaleFFTX_lam*(-ll/ZOOM),(obsMan.pixScaleFFTX_lam*(+ll/ZOOM)))
+                    # # p5.set_ylim(obsMan.pixScaleFFTY_lam*(-mm/ZOOM),(obsMan.pixScaleFFTY_lam*(+mm/ZOOM)))
+                    # p5.set_aspect(p0.get_aspect())
+                    # p5.text(-0.1,0.5,r"$\otimes$",ha='center', va='center',fontsize = 20, transform=p5.transAxes)
+                    # p5.axes.get_xaxis().set_visible(False)
+                    # p5.axes.get_yaxis().set_visible(False)
+                    # p5.set_title("Beam of the ALMA interferometer",fontsize = 15)
 
 
                     #fft of final image
-                    p6 = plt.subplot(2,4,8)
+                    p6 = plt.subplot(1,3,2) # 2026-04-13 - Adam Wikström - Changed arguments to from 2,4,8
+                    plogo.set_position([scrsize.width/2, scrsize.height/2, 0, 0], which='both')
                     # p6.imshow(np.log10(abs(obsMan.obsFFTarr)+1e3)-3,cmap = colormap,interpolation = 'bicubic',origin = 'lower')
                     p6.imshow(np.real(obsMan.obsImgArr),origin='lower',cmap=colormap)
                     # p6.set_xlim(ll/2-ll/ZOOM,ll/2+ll/ZOOM)
                     # p6.set_ylim(mm/2-mm/ZOOM,mm/2+mm/ZOOM)
-                    p6.text(-0.1,0.5,r"$=$",ha='center', va='center',fontsize = 20, transform=p6.transAxes)
                     p6.set_aspect('equal')
                     p6.axes.get_xaxis().set_visible(False)
                     p6.axes.get_yaxis().set_visible(False)
-                    p6.set_title("ALMA view",fontsize = 15)                    
+                    p6.set_title("ALMA view",fontsize = 15)
+                    alma_view_accessible = p6 # 2026-04-13 - Adam Wikström - added for external access
                     computetimestart=time.time()
                 else:
-                    p5 = plt.subplot(2,4,7)
-                    sigma = 80
-                    x = np.linspace(-250, 250, 100)
-                    y = np.linspace(-250, 250, 100)
-                    x_grid, y_grid = np.meshgrid(x, y)
-                    single_beam = np.exp(-((x_grid)**2 + (y_grid)**2)/(2*sigma**2))
-                    p5.imshow(single_beam,origin = 'lower',cmap = colormap)
-                    p5.text(-0.1,0.5,r"$\otimes$",ha='center', va='center',fontsize = 25, transform=p2.transAxes)
-                    p5.axes.get_xaxis().set_visible(False)
-                    p5.axes.get_yaxis().set_visible(False)
-                    p5.set_title("Beam of single ALMA antenna",fontsize = 15)
-                
+                    # 2026-04-13 - Adam Wikström
+                    # p5 = plt.subplot(2,4,7)
+                    # sigma = 80
+                    # x = np.linspace(-250, 250, 100)
+                    # y = np.linspace(-250, 250, 100)
+                    # x_grid, y_grid = np.meshgrid(x, y)
+                    # single_beam = np.exp(-((x_grid)**2 + (y_grid)**2)/(2*sigma**2))
+                    # p5.imshow(single_beam,origin = 'lower',cmap = colormap)
+                    # p5.text(-0.1,0.5,r"$\otimes$",ha='center', va='center',fontsize = 25, transform=p2.transAxes)
+                    # p5.axes.get_xaxis().set_visible(False)
+                    # p5.axes.get_yaxis().set_visible(False)
+                    # p5.set_title("Beam of single ALMA antenna",fontsize = 15)
+
 
                     #plot different final image, no beam
                     # with open(imagefile.split(".")[0]+"_SDOUT.pickle",'rb') as fin:
-                    #     simage_sd = pickle.load(fin) 
+                    #     simage_sd = pickle.load(fin)
                     sgdish_image = gaussian_filter(obsMan.modelImgArr,sigma,mode = 'constant')
-                    p6 = plt.subplot(2,4,8)
+                    p6 = plt.subplot(1,3,2) # 2026-04-13 - Adam Wikström - Changed arguments to from 2,4,8
+                    plogo.set_position([scrsize.width / 2.0, scrsize.height / 2.0, 0, 0], which='both')
                     p6.imshow(sgdish_image,origin = 'lower',cmap = colormap)
-                    p6.text(-0.1,0.5,r"$=$",ha='center', va='center',fontsize = 25, transform=p3.transAxes)
                     p6.axes.get_xaxis().set_visible(False)
                     p6.axes.get_yaxis().set_visible(False)
                     p6.set_title("Single ALMA View",fontsize = 15)
+                    alma_view_accessible = p6 # 2026-04-13 - Adam Wikström - added for external access
                     
 
             except Exception as e:
