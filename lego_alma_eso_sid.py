@@ -33,9 +33,9 @@ params = {'axes.titlesize':'small'}
 pylab.rcParams.update(params)
 colormap = 'inferno'
 
-buttons_inp = "0100100"
+buttons_inp = "0101000" # Adam - Edited the value for testing - 2025_04_07
 # attenas_inp = "111111111111111111111111111111111111111111111"
-attenas_inp = "000000000000000000000000000000000001000000000"
+attenas_inp = "000000010000000000000010000000000001000000000" # Adam - Edited the value for testing - 2025_04_07
 
 # https://medium.com/@CodyReichert/how-to-hide-title-bars-in-kde-plasma-5-348e0df4087f
 # https://matplotlib.org/api/animation_api.html
@@ -118,7 +118,7 @@ bitdict_image = {'agb_star': 3,
            'hltau': 2,
            'outflow': 4}
 
-NoSerial = False
+NoSerial = True # Adam - 2025-04-07
 
 webcam = False
 
@@ -205,7 +205,7 @@ def waitforserialchange(ser, bitdict, ant_dict, npadarray=45, verbose=False):
             attenas = attenas_inp
 
             serialinput = attenas  + buttons
-            # serialinput= "11111111000111110001101000111000000000000000 0000000100010000100" 
+            # serialinput= "11111111000111110001101000111000000000000000 0000000100010000100"
             print('this is the length of serial input',len(serialinput))
         else:
             serialinput = str(ser.readline().decode("utf-8").strip())
