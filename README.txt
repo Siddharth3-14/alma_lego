@@ -1,5 +1,3 @@
-# alma_lego
-
 To run the code open the folder alma_lego
 
 Right click and press open in terminal and type
