@@ -24,6 +24,7 @@ import sys
 import pyautogui
 
 import matplotlib.pylab as pylab
+import Alma_UI
 
 
 import sys
@@ -496,7 +497,7 @@ mng.full_screen_toggle()
 serialinput="0"
 serialinputlast=""
 imglogo = mpimg.imread(model_logo_filename)                
-
+AT_ui = ALMA_UI()
 Flag = True
 while True:
     
