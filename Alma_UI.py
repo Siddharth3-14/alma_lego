@@ -37,7 +37,7 @@ class ALMA_UI:
         return os.path.join(assets, path)
 
     def __start(self):
-        self.change_view("restart_view")
+        self.change_view("observation_view")
         self.window.resizable(False, False)
         self.window.mainloop()
 

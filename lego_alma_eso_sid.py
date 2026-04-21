@@ -496,8 +496,8 @@ mng.full_screen_toggle()
 #start of main prgoram loop
 serialinput="0"
 serialinputlast=""
-imglogo = mpimg.imread(model_logo_filename)                
-AT_ui = ALMA_UI()
+imglogo = mpimg.imread(model_logo_filename)
+# AT_ui = Alma_UI.ALMA_UI()
 Flag = True
 while True:
     
@@ -506,14 +506,14 @@ while True:
     print("------------------------------------------------------------------------------------------")
     if verbose:
         starttime = time.time()
-        
+
         lasttime = starttime
         thistime = time.time(); print(("TIMING %f  %f" %(thistime-starttime,thistime-lasttime))); lasttime= thistime
     #we fiddled with some constants here
     #    hourangle_start = hourangle - 0.5
     #    hourangle_end = hourangle + 0.5
     #    hourangle+=1
-    #if hourangle > 6: 
+    #if hourangle > 6:
     #        hourangle = -6
     #        hourangle_start = -6
     #        hourangle_end = 6
@@ -522,68 +522,68 @@ while True:
     try:
         if verbose:
             thistime = time.time(); print(("TIMING %f  %f" %(thistime-starttime,thistime-lasttime))); lasttime= thistime
-            computetimestart=time.time()    
+            computetimestart=time.time()
         #start the VRI with the latest antenna position config file, which we generate on every loop baased on the
         #bit strings from the boxes.
-        
+
         ### linein = ser.readline()
-        
-        # moved above the serial input. Does not cost time anymore.       
+
+        # moved above the serial input. Does not cost time anymore.
             thistime = time.time(); print(("TIMING %f  %f" %(thistime-starttime,thistime-lasttime))); lasttime= thistime
-        bit_pos1, bit_pos2, buttons_config,buttons_image,ant_pos, xx_antpos, yy_antpos, singledish = waitforserialchange(ser, bitdict, ant_dict, verbose=verbose) 
-        # bit_pos1, bit_pos2, ant_pos, xx_antpos, yy_antpos, singledish = waitforserialchange(ser, bitdict, ant_dict, verbose=verbose) 
+        bit_pos1, bit_pos2, buttons_config,buttons_image,ant_pos, xx_antpos, yy_antpos, singledish = waitforserialchange(ser, bitdict, ant_dict, verbose=verbose)
+        # bit_pos1, bit_pos2, ant_pos, xx_antpos, yy_antpos, singledish = waitforserialchange(ser, bitdict, ant_dict, verbose=verbose)
         write_alma_config_file("lego_alma.config", ant_pos)
         obsMan = observationManager(verbose=True, debug=True)
 
         if verbose:
             thistime = time.time(); print(("TIMING make observation manager (debugTrue) %f  %f" %(thistime-starttime,thistime-lasttime))); lasttime= thistime
         obsMan.get_available_arrays()
-        
+
         if verbose:
             thistime = time.time(); print(("TIMING make observation manager read arrays %f  %f" %(thistime-starttime,thistime-lasttime))); lasttime= thistime
-        # bit_pos1, bit_pos2, buttons_config,buttons_image,ant_pos, xx_antpos, yy_antpos, singledish = waitforserialchange(ser, bitdict, ant_dict, verbose=verbose) 
-        # # bit_pos1, bit_pos2, ant_pos, xx_antpos, yy_antpos, singledish = waitforserialchange(ser, bitdict, ant_dict, verbose=verbose) 
+        # bit_pos1, bit_pos2, buttons_config,buttons_image,ant_pos, xx_antpos, yy_antpos, singledish = waitforserialchange(ser, bitdict, ant_dict, verbose=verbose)
+        # # bit_pos1, bit_pos2, ant_pos, xx_antpos, yy_antpos, singledish = waitforserialchange(ser, bitdict, ant_dict, verbose=verbose)
         # write_alma_config_file("lego_alma.config", ant_pos)
 
         for i in range(1,9):
             pp = plt.subplot(2,4,i)
             xmin, xmax = pp.get_xlim()
-            ymin, ymax = pp.get_ylim()            
+            ymin, ymax = pp.get_ylim()
             rectangle = matplotlib.patches.Rectangle((xmin,xmin), xmax-xmin, ymax-ymin, color='black', alpha=0.4)
             pp.add_patch(rectangle)
         # webcam, imagefile, pixel_scale, integration_time, hourangle, hourangle_start, hourangle_end = select_model_and_hourangle(bitdict, bit_pos2)
         webcam, imagefile, pixel_scale, integration_time, hourangle, hourangle_start, hourangle_end = select_model_and_hourangle(bitdict, bit_pos2,bitdict_config,bitdict_image,buttons_config,buttons_image)
-        
+
         if verbose:
             print(imagefile, integration_time,hourangle_start,hourangle_end,"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
             print(("TIMING preparations: %f" %(time.time()-computetimestart)))
-            computetimestart=time.time()  
+            computetimestart=time.time()
             thistime = time.time(); print(("TIMING %f  %f" %(thistime-starttime,thistime-lasttime))); lasttime= thistime
-            
+
         # set up the VRI for this specific obs
         # Select array configurations and hour-angle ranges.
         obsMan.select_array('ALMA_Custom-lego-alma',haStart = hourangle_start,haEnd = hourangle_end,sampRate_s=300)
         #obsMan.select_array('ALMA_Cycle6-C43-5',haStart = hourangle_start,haEnd = hourangle_end,sampRate_s=300)
         #obsMan.select_array('ALMA_Cycle6-C43-1',haStart = hourangle_start,haEnd = hourangle_end,sampRate_s=300)
         obsMan.get_selected_arrays()
-        
+
         if verbose:
             print(("TIMING select arrays: %f" %(time.time()-computetimestart)))
-            computetimestart=time.time()  
-            thistime = time.time(); print(("TIMING %f  %f" %(thistime-starttime,thistime-lasttime))); lasttime= thistime      
-            
+            computetimestart=time.time()
+            thistime = time.time(); print(("TIMING %f  %f" %(thistime-starttime,thistime-lasttime))); lasttime= thistime
+
         # Set the observing frequency (MHz) and source declination (deg).
         obsMan.set_obs_parms(FREQ, DEC)
-        
+
         if verbose:
-            print(("TIMING set obs parmss: %f" %(time.time()-computetimestart)))            
-            computetimestart=time.time() 
-         
+            print(("TIMING set obs parmss: %f" %(time.time()-computetimestart)))
+            computetimestart=time.time()
+
         # Calculate the uv-coverage
         obsMan.calc_uvcoverage()
         if verbose:
             print(("TIMING uv coverage: %f" %(time.time()-computetimestart)))
-            computetimestart=time.time() 
+            computetimestart=time.time()
             thistime = time.time(); print(("TIMING %f  %f" %(thistime-starttime,thistime-lasttime))); lasttime= thistime
         
         # XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXxxxx
@@ -650,113 +650,10 @@ while True:
                 plogo.axes.get_yaxis().set_visible(False)
 
                 sigma = 50
-                #plto antenna position
-                # 2026-04-13 - Adam Wikström - commented out following code
-                # p0 = plt.subplot(2,4,1)
-                # p0.set_title("Single Dish Antenna",fontsize = 15)
-                # p0.scatter(0,0)
-                # p0.set_xlim(-250,250)
-                # p0.set_ylim(-250,250)
-                # p0.set_xlabel("x (m)")
-                # p0.set_ylabel("y (m)")
-                # p0.set_aspect('equal')
-                #
-                # pp0 = plt.subplot(2,4,5)
-                # pp0.set_title("ALMA from source (perspective)",fontsize = 15)
-                # pp0.text(4.5,-0.3,r"Powered by: Friendly VRI C.R. Purcell R. Truelove",ha='center', va='center',fontsize =8, transform=pp0.transAxes)
-                #
-                # hrangle_rad = np.radians(hourangle*15)
-                # dec_rad = np.radians(DEC)
-                # xx_earth_cen = -yy_antpos*np.sin(np.radians(-23.023))
-                # yy_earth_cen = xx_antpos
-                # zz_earth_cen = yy_antpos*np.cos(np.radians(-23.023))
-                #
-                # xx_antpos_proj = -(xx_earth_cen*np.sin(hrangle_rad)+yy_earth_cen*np.cos(hrangle_rad))
-                # yy_antpos_proj = -xx_earth_cen*np.sin(dec_rad)*np.cos(hrangle_rad) + yy_earth_cen*np.sin(dec_rad)*np.sin(hrangle_rad)+zz_earth_cen*np.cos(dec_rad)
-                #
-                # if hourangle > 0:
-                #     pp0.scatter(yy_antpos_proj,xx_antpos_proj)
-                # elif hourangle < 0:
-                #     pp0.scatter(-yy_antpos_proj,-xx_antpos_proj)
-                # elif hourangle == 0:
-                #     pp0.scatter(xx_antpos_proj,-yy_antpos_proj)
-
-                # 2026-04-13 - Adam Wikström
-                # pp0.set_xlim(-250,250)
-                # pp0.set_ylim(-250,250)
-                # pp0.set_aspect('equal')
-                # pp0.set_xlabel("x (m)")
-                # pp0.set_ylabel("y (m)")
-
-                #plot original image
-                # p1 = plt.subplot(2,4,2)
-                # if imagefile == "/home/kiosk/alma_sid_07_05_2025/Alma_main/models/mistery_med.png":
-                #     qmarkimg=mpimg.imread('/home/kiosk/alma_sid_07_05_2025/Alma_main/models/mistery_qmark.png')
-                #     p1.imshow(qmarkimg,cmap = colormap)
-                # else:
-                #     p1.imshow(np.real(obsMan.modelImgArr),origin = 'lower',cmap = colormap)
-                # p1.axes.get_xaxis().set_visible(False)
-                # p1.axes.get_yaxis().set_visible(False)
-                # p1.set_title("Picture of the source", fontsize = 15)
-                #
-                #
-                # # print("SINGLEDISH")
-                # p2 = plt.subplot(2,4,3)
-
-                # x = np.linspace(-250, 250, 100)
-                # y = np.linspace(-250, 250, 100)
-                # x_grid, y_grid = np.meshgrid(x, y)
-                # single_beam = np.exp(-((x_grid)**2 + (y_grid)**2)/(2*sigma**2))
-                # p2.imshow(single_beam,origin = 'lower',cmap = colormap)
-                # p2.text(-0.1,0.5,r"$\otimes$",ha='center', va='center',fontsize = 25, transform=p2.transAxes)
-                # p2.axes.get_xaxis().set_visible(False)
-                # p2.axes.get_yaxis().set_visible(False)
-                # p2.set_title("Beam of single dish",fontsize = 15)
-                #
-                #
-                # #plot different final image, no beam
-                # # with open(imagefile.split(".")[0]+"_SDOUT.pickle",'rb') as fin:
-                # #     simage_sd = pickle.load(fin)
-                # sgdish_image = gaussian_filter(obsMan.modelImgArr,sigma,mode = 'constant')
-                # p3 = plt.subplot(2,4,4)
-                # p3.imshow(sgdish_image,origin = 'lower',cmap = colormap)
-                # p3.text(-0.1,0.5,r"$=$",ha='center', va='center',fontsize = 25, transform=p3.transAxes)
-                # p3.axes.get_xaxis().set_visible(False)
-                # p3.axes.get_yaxis().set_visible(False)
-                # p3.set_title("Single Dish View",fontsize = 15)
-                #
-                #
-                #
-                # #fft of original image
-                #
-                # p4 = plt.subplot(2,4,6)
-                # # mm,ll = np.shape(obsMan.modelFFTarr)
-                # #p4.imshow(np.log10(abs(obsMan.modelFFTarr)),cmap = 'gist_heat',interpolation = 'bicubic')
-                # # p4.imshow(np.log10(abs(obsMan.modelFFTarr)),cmap = 'gist_heat',interpolation = 'bicubic')
-                # p4.imshow(obsMan.modelImgArr,cmap = colormap,origin = 'lower')
-                # # p4.set_xlim(ll/2-ll/ZOOM,ll/2+ll/ZOOM)
-                # # p4.set_ylim(mm/2-mm/ZOOM,mm/2+mm/ZOOM)
-                # p4.axes.get_xaxis().set_visible(False)
-                # p4.axes.get_yaxis().set_visible(False)
-                # p4.set_title("Picture of the source",fontsize = 15)
                 
 
                 if not singledish:
                     # 2026-04-13 - Adam Wikström
-                    # computetimestart = time.time()
-                    # #plot uvcoverage
-                    # p5 = plt.subplot(2,4,7)
-                    # p5.scatter(obsMan.arrsSelected[0]['uArr_lam'],obsMan.arrsSelected[0]['vArr_lam'],s=1)
-                    # p5.scatter(-1.*obsMan.arrsSelected[0]['uArr_lam'],-1*obsMan.arrsSelected[0]['vArr_lam'],s=1)
-                    # thistime = time.time(); print(("TIMING %f  %f uv coverage" %(thistime-starttime,thistime-lasttime))); lasttime= thistime
-                    # # p5.set_xlim(obsMan.pixScaleFFTX_lam*(-ll/ZOOM),(obsMan.pixScaleFFTX_lam*(+ll/ZOOM)))
-                    # # p5.set_ylim(obsMan.pixScaleFFTY_lam*(-mm/ZOOM),(obsMan.pixScaleFFTY_lam*(+mm/ZOOM)))
-                    # p5.set_aspect(p0.get_aspect())
-                    # p5.text(-0.1,0.5,r"$\otimes$",ha='center', va='center',fontsize = 20, transform=p5.transAxes)
-                    # p5.axes.get_xaxis().set_visible(False)
-                    # p5.axes.get_yaxis().set_visible(False)
-                    # p5.set_title("Beam of the ALMA interferometer",fontsize = 15)
-
 
                     #fft of final image
                     p6 = plt.subplot(1,3,2) # 2026-04-13 - Adam Wikström - Changed arguments to from 2,4,8
@@ -773,18 +670,6 @@ while True:
                     computetimestart=time.time()
                 else:
                     # 2026-04-13 - Adam Wikström
-                    # p5 = plt.subplot(2,4,7)
-                    # sigma = 80
-                    # x = np.linspace(-250, 250, 100)
-                    # y = np.linspace(-250, 250, 100)
-                    # x_grid, y_grid = np.meshgrid(x, y)
-                    # single_beam = np.exp(-((x_grid)**2 + (y_grid)**2)/(2*sigma**2))
-                    # p5.imshow(single_beam,origin = 'lower',cmap = colormap)
-                    # p5.text(-0.1,0.5,r"$\otimes$",ha='center', va='center',fontsize = 25, transform=p2.transAxes)
-                    # p5.axes.get_xaxis().set_visible(False)
-                    # p5.axes.get_yaxis().set_visible(False)
-                    # p5.set_title("Beam of single ALMA antenna",fontsize = 15)
-
 
                     #plot different final image, no beam
                     # with open(imagefile.split(".")[0]+"_SDOUT.pickle",'rb') as fin:
