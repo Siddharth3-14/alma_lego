@@ -5,6 +5,7 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 from AT_functions import AnimatedGIF, VideoPlayer
 
+
 # Class that creates and populates a UI for LEGO ALMA
 #
 # Created by Adam Wikström - 2026-04-21
@@ -187,7 +188,7 @@ class ALMA_UI:
 
     # Method that creates the content for the observation view
     def __observation_view(self):
-        #
+        # Selected object illustration rectangle
         self.canvas.create_rectangle(269, 63, 528, 324, fill='#000000', outline="#ffffff", width="3.0")
         # Information/Guide GIF rectangle
         self.canvas.create_rectangle(156, 670, 641, 1013, fill='#000000', outline="#ffffff", width="3.0")
