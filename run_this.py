@@ -25,8 +25,8 @@ import pandas as pd
 from astropy.io import ascii
 import time
 
-import vriCalc
-from vriCalc import observationManager
+import VriCalc
+from functions.vriCalc import observationManager
 from astropy.convolution import Gaussian2DKernel, convolve
 from scipy.ndimage import gaussian_filter
 import matplotlib.image as mpimg
@@ -34,9 +34,11 @@ import pickle
 import os
 import pyautogui
 import matplotlib.pylab as pylab
-import functions2run
+from functions import functions2run
 import matplotlib
-matplotlib.use('TkAgg')
+
+#import Alma_UI
+#matplotlib.use('TkAgg')
 
 
 #####################   Setting up parameters ############################
@@ -77,6 +79,8 @@ else:
 starttime = time.time()
 lasttime  = starttime
 
+#ui = Alma_UI.ALMA_UI()
+
 ########################## The main plotting starts here ##########################
 x = np.linspace(-250, 250, 100)
 y = np.linspace(-250, 250, 100)
@@ -88,8 +92,8 @@ matplotlib.rcParams['toolbar'] = 'None'
 plt.style.use('dark_background')
 plt.ion()
 
-fig, ax_grid = plt.subplots(2, 4)
-ax = ax_grid.flatten()  # ax[0..7]: left-to-right, top-to-bottom
+fig, ax = plt.subplots()
+#ax = ax_grid.flatten()  # ax[0..7]: left-to-right, top-to-bottom
 
 scrsize = pyautogui.size()
 mng = plt.get_current_fig_manager()
@@ -99,84 +103,22 @@ if Serial:
 
 dummy = np.zeros((100, 100))
 
-# ── ax[0]: Single dish antenna position (scatter) ──────────────────────────
-ax[0].set_title("Single Dish Antenna", fontsize=15)
-ax[0].set_xlim(antenna_lim_min, antenna_lim_max)
-ax[0].set_ylim(antenna_lim_min, antenna_lim_max)
-ax[0].set_xlabel("x (m)")
-ax[0].set_ylabel("y (m)")
-ax[0].set_aspect('equal')
-scatter_p0 = ax[0].scatter([], [])
+# Adam Wikström - 2026-04-21 - removed all figures but the ALMA View
 
-# ── ax[1]: Model image ─────────────────────────────────────────────────────
-im_p1 = ax[1].imshow(dummy, origin='lower', cmap=colormap)
-ax[1].set_title("Picture of the source", fontsize=15)
-ax[1].axes.get_xaxis().set_visible(False)
-ax[1].axes.get_yaxis().set_visible(False)
+# Adam Wikström - 2026-04-21 - Adjusted the Alma View to just show the graph and nothing else
+im_p6 = ax.imshow(dummy, origin='lower', cmap=colormap)
 
-# ── ax[2]: Single dish beam (STATIC — set once, never updated) ─────────────
-im_p2 = ax[2].imshow(single_beam_50, origin='lower', cmap=colormap)
-ax[2].text(-0.1, 0.5, r"$\otimes$", ha='center', va='center',
-           fontsize=25, transform=ax[2].transAxes)
-ax[2].set_title("Beam of single dish", fontsize=15)
-ax[2].axes.get_xaxis().set_visible(False)
-ax[2].axes.get_yaxis().set_visible(False)
-
-# ── ax[3]: Single dish view ────────────────────────────────────────────────
-im_p3 = ax[3].imshow(dummy, origin='lower', cmap=colormap)
-ax[3].text(-0.1, 0.5, r"$=$", ha='center', va='center',
-           fontsize=25, transform=ax[3].transAxes)
-ax[3].set_title("Single Dish View", fontsize=15)
-ax[3].axes.get_xaxis().set_visible(False)
-ax[3].axes.get_yaxis().set_visible(False)
-
-# ── ax[4]: ALMA perspective scatter ───────────────────────────────────────
-ax[4].set_title("ALMA from source (perspective)", fontsize=15)
-ax[4].text(4.5, -0.3, r"Powered by: Friendly VRI C.R. Purcell R. Truelove",
-           ha='center', va='center', fontsize=8, transform=ax[4].transAxes)
-ax[4].set_xlim(antenna_lim_min, antenna_lim_max)
-ax[4].set_ylim(antenna_lim_min, antenna_lim_max)
-ax[4].set_aspect('equal')
-ax[4].set_xlabel("x (m)")
-ax[4].set_ylabel("y (m)")
-scatter_pp0 = ax[4].scatter([], [])
-
-# ── ax[5]: Duplicate source image ─────────────────────────────────────────
-im_p4 = ax[5].imshow(dummy, origin='lower', cmap=colormap)
-ax[5].set_title("Picture of the source", fontsize=15)
-ax[5].axes.get_xaxis().set_visible(False)
-ax[5].axes.get_yaxis().set_visible(False)
-
-# ── ax[6]: UV-coverage scatter / single ALMA beam (switches on singledish) ─
-im_p5 = ax[6].imshow(dummy, origin='lower', cmap=colormap)
-ax[6].text(-0.1, 0.5, r"$\otimes$", ha='center', va='center',
-           fontsize=20, transform=ax[6].transAxes)
-ax[6].set_title("Beam of the ALMA interferometer", fontsize=15)
-ax[6].axes.get_xaxis().set_visible(False)
-ax[6].axes.get_yaxis().set_visible(False)
-scatter_p5        = ax[6].scatter([], [], s=1)
-scatter_p5_mirror = ax[6].scatter([], [], s=1)
-
-# ── ax[7]: ALMA / single-ALMA final image ─────────────────────────────────
-im_p6 = ax[7].imshow(dummy, origin='lower', cmap=colormap)
-ax[7].text(-0.1, 0.5, r"$=$", ha='center', va='center',
-           fontsize=20, transform=ax[7].transAxes)
-ax[7].set_title("ALMA view", fontsize=15)
-ax[7].axes.get_xaxis().set_visible(False)
-ax[7].axes.get_yaxis().set_visible(False)
+# Remove
+for spine in ax.spines.values():
+    spine.set_visible(False)
+ax.set_xticks([])
+ax.set_yticks([])
+ax.set_frame_on(False)
 
 fig.tight_layout()
+ax.set_visible(True)
 
-# ── "Please add an antenna" overlay — hidden until needed ─────────────────
-no_antenna_ax = fig.add_axes([0, 0, 1, 1])
-no_antenna_ax.set_facecolor('black')
-no_antenna_ax.text(0.5, 0.5, 'Please add an antenna',
-                   color='white', fontsize=30,
-                   ha='center', va='center',
-                   transform=no_antenna_ax.transAxes)
-no_antenna_ax.set_visible(False)
-no_antenna_ax.set_zorder(10)
-
+# Adam Wikström - 2026-04-21 - removed "please add an antenna" overlay
 # ── Clean exit: press 'q' or Escape in the plot window ────────────────────
 exit_flag = [False]
 
@@ -213,17 +155,17 @@ while not exit_flag[0]:
 
         # ── No antenna: show overlay, skip all computation ────────────────
         if not is_there_antenna:
-            no_antenna_ax.set_visible(True)
-            for a in ax:
-                a.set_visible(False)
+            # no_antenna_ax.set_visible(True) - Adam W - 2026-04-21 commented out
+            # for a in ax:
+            #     a.set_visible(False)
             fig.canvas.draw_idle()
             plt.pause(2)
             continue  # back to top of loop
 
         # ── Antenna present: hide overlay, show subplots ──────────────────
-        no_antenna_ax.set_visible(False)
-        for a in ax:
-            a.set_visible(True)
+        # no_antenna_ax.set_visible(False) - Adam W - 2026-04-21 commented out
+        # for a in ax:
+        #     a.set_visible(True)
 
         print('CHECK 2')
 
@@ -323,96 +265,12 @@ while not exit_flag[0]:
 
                 ########## FIX 2: update existing artists, no clf() ##########
 
-                # ax[0]: single dish — static dot at origin
-                scatter_p0.set_offsets([[0, 0]])
-
-                # ax[4]: ALMA perspective projection
-                hrangle_rad  = np.radians(hourangle * 15)
-                dec_rad      = np.radians(DEC)
-                xx_earth_cen = -yy_antpos * np.sin(np.radians(-23.023))
-                yy_earth_cen =  xx_antpos
-                zz_earth_cen =  yy_antpos * np.cos(np.radians(-23.023))
-                xx_antpos_proj = -(xx_earth_cen * np.sin(hrangle_rad) +
-                                    yy_earth_cen * np.cos(hrangle_rad))
-                yy_antpos_proj = (-xx_earth_cen * np.sin(dec_rad) * np.cos(hrangle_rad) +
-                                   yy_earth_cen * np.sin(dec_rad) * np.sin(hrangle_rad) +
-                                   zz_earth_cen * np.cos(dec_rad))
-
-                if hourangle > 0:
-                    scatter_pp0.set_offsets(np.c_[yy_antpos_proj,  xx_antpos_proj])
-                elif hourangle < 0:
-                    scatter_pp0.set_offsets(np.c_[-yy_antpos_proj, -xx_antpos_proj])
-                else:
-                    scatter_pp0.set_offsets(np.c_[xx_antpos_proj,  -yy_antpos_proj])
-
-                # ax[1]: model image
-                if imagefile == "/home/kiosk/alma_sid_07_05_2025/Alma_main/models/mistery_med.png":
-                    qmarkimg = mpimg.imread(
-                        '/home/kiosk/alma_sid_07_05_2025/Alma_main/models/mistery_qmark.png')
-                    im_p1.set_data(qmarkimg)
-                else:
-                    data_p1 = np.real(obsMan.modelImgArr)
-                    im_p1.set_data(data_p1)
-                    im_p1.set_clim(vmin=data_p1.min(), vmax=data_p1.max())
-
-                # ax[2]: single dish beam — STATIC, no update needed
-
-                # ax[3]: single dish convolved view
-                sgdish_image = gaussian_filter(obsMan.modelImgArr, 50, mode='constant')
-                im_p3.set_data(sgdish_image)
-                im_p3.set_clim(vmin=sgdish_image.min(), vmax=sgdish_image.max())
-
-                # ax[5]: duplicate source image
-                data_p4 = obsMan.modelImgArr
-                im_p4.set_data(data_p4)
-                im_p4.set_clim(vmin=data_p4.min(), vmax=data_p4.max())
-
-            
-
-                if not singledish:
-                    ax[6].cla()
-                    
-                    u_data = obsMan.arrsSelected[0]['uArr_lam']
-                    v_data = obsMan.arrsSelected[0]['vArr_lam']
-                    
-                    ax[6].scatter(u_data, v_data, s=1)
-                    ax[6].scatter(-u_data, -v_data, s=1)
-                    
-                    # Force limits to be symmetric and fill the axes
-                    uv_max = np.max(np.abs(np.concatenate([u_data, v_data]))) * 1.1
-                    ax[6].set_xlim(-uv_max, uv_max)
-                    ax[6].set_ylim(-uv_max, uv_max)
-                    
-                    ax[6].text(-0.1, 0.5, r"$\otimes$", ha='center', va='center',
-                            fontsize=20, transform=ax[6].transAxes)
-                    ax[6].set_title("Beam of the ALMA interferometer", fontsize=15)
-                    ax[6].axes.get_xaxis().set_visible(False)
-                    ax[6].axes.get_yaxis().set_visible(False)
-                    ax[6].set_facecolor('black')
-                    
-                    if verbose:
-                        thistime = time.time()
-                        print("TIMING %f  %f uv coverage" % (thistime - starttime, thistime - lasttime))
-                        lasttime = thistime
-
+                    # Adam Wikström - 2026-04-21
+                    # Removed updating of unused graphs
                     # ax[7]: ALMA observed image
                     data_p6 = np.real(obsMan.obsImgArr)
                     im_p6.set_data(data_p6)
                     im_p6.set_clim(vmin=data_p6.min(), vmax=data_p6.max())
-                    ax[7].set_title("ALMA view", fontsize=15)
-
-                else:
-                    scatter_p5.set_visible(False)        # explicitly hide scatter
-                    scatter_p5_mirror.set_visible(False) # explicitly hide scatter
-                    im_p5.set_visible(True)
-                    im_p5.set_data(single_beam_80)
-                    im_p5.set_clim(vmin=single_beam_80.min(), vmax=single_beam_80.max())
-                    ax[6].set_title("Beam of single ALMA antenna", fontsize=15)
-
-                    sgdish_image_80 = gaussian_filter(obsMan.modelImgArr, 80, mode='constant')
-                    im_p6.set_data(sgdish_image_80)
-                    im_p6.set_clim(vmin=sgdish_image_80.min(), vmax=sgdish_image_80.max())
-                    ax[7].set_title("Single ALMA View", fontsize=15)
 
             except Exception as e:
                 print(e)
