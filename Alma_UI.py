@@ -270,3 +270,5 @@ class ALMA_UI:
 
     def get_canvas(self):
         return self.canvas
+
+app = ALMA_UI()

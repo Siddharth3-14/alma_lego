@@ -25,8 +25,8 @@ import pandas as pd
 from astropy.io import ascii
 import time
 
-import vriCalc
-from vriCalc import observationManager
+import VriCalc
+from functions.vriCalc import observationManager
 from astropy.convolution import Gaussian2DKernel, convolve
 from scipy.ndimage import gaussian_filter
 import matplotlib.image as mpimg
@@ -34,10 +34,10 @@ import pickle
 import os
 import pyautogui
 import matplotlib.pylab as pylab
-import functions2run
+from functions import functions2run
 import matplotlib
 
-import Alma_UI
+#import Alma_UI
 #matplotlib.use('TkAgg')
 
 
@@ -79,7 +79,7 @@ else:
 starttime = time.time()
 lasttime  = starttime
 
-ui = Alma_UI.ALMA_UI()
+#ui = Alma_UI.ALMA_UI()
 
 ########################## The main plotting starts here ##########################
 x = np.linspace(-250, 250, 100)
