@@ -21,5 +21,5 @@ Your block of code
 .
 #################################################
 
-The function is that important as long as you have written a documentation for it.
+The function name is not that important as long as you have written a documentation for it.
 Use this style of documentation https://numpy.org/doc/2.1/reference/generated/numpy.add.html
